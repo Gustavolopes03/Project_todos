@@ -1,7 +1,8 @@
 import { Request,Response } from "express";
+import { Any } from "typeorm";
 import { v4 as uuid } from "uuid";
 
-
+var fs = require('fs');
 
 interface iuser {
     id: string,
@@ -31,7 +32,7 @@ const users = <any>[]
 
 export default class UsersController{
     public async create(request: Request, response: Response){
-
+        
         const { name,email,birthDate,cpf } = request.body;
 
         const fuser = users.find((user:any)=>{
@@ -40,9 +41,10 @@ export default class UsersController{
 
         if (fuser){
             return response.status(200).json(fuser)
-        }
+        } 
+            
 
-        const user = {
+        const user =  {
             id:uuid(),
             name,
             email,
@@ -59,10 +61,32 @@ export default class UsersController{
 
         const {cpf} = request.headers;
 
-        const user = users.find((user:any)=>{
-            return user.cpf === cpf
-        });
-        return response.status(200).json(user);
+        if (cpf){
+        const fuser = users.find((user:any)=>{
+            return user.cpf == cpf
+        });        
+            return response.status(200).json(fuser)
+        }
+        return response.status(200).json(users);
+
+    }
+    public async af(request:Request ,response:Response){
+        var tage = Date;
+        var data = new Date();
+        var dia = String(data.getDate()).padStart(2, '0');
+        var mes = String(data.getMonth() + 1).padStart(2, '0');
+        var ano = data.getFullYear();
+        var dataAtual = dia + '/' + mes + '/' + ano;
+        console.log(dataAtual);
+        //const age = users.find((user:any)=>{
+          
+        //   console.log(tage = user.birthDate-getDay / data)
+        //})
+
     }
 
+}
+
+function newDate() {
+    throw new Error("Function not implemented.");
 }

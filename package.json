@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "node": "^16.5.0",
+    "typeorm": "^0.2.34",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.11"
   }
