@@ -1,39 +1,48 @@
+import { strict } from "assert/strict";
 import { Request,Response } from "express";
+import { read } from "fs";
+import { addListener } from "process";
 import { Any } from "typeorm";
-import { v4 as uuid } from "uuid";
-
-var fs = require('fs');
+import { stringify, v4 as uuid } from "uuid";
 
 interface iuser {
     id: string,
     name: string,
     birthDate: Date,
+    age?: number,
     email: string,
-    password: string,
+    //password: string,
     cpf: number,
-    address: {
-        street:string,
-        number:number,
-        district:string,
-        city:string,
-        state:string,
+    address?: {
+       street:string,
+       number:number,
+       district:string,
+       city:string,
+       state:string,
     }
-    todos:{
-        id:string,
-        title:string,
-        deadline:string,
-        done:boolean,
-        created_at:Date,
+    todos?:{
+       id:string,
+       title:string,
+       deadline:string,
+       done:boolean,
+       created_at:Date,
     }
     
 
 }
-const users = <any>[]
+const users: iuser[] = [];
 
 export default class UsersController{
     public async create(request: Request, response: Response){
         
         const { name,email,birthDate,cpf } = request.body;
+
+        const userFindall = users.find((user:any)=> {
+            return user.name === name,
+            user.email === email,
+            user.birthDate === birthDate,
+            user.cpf === cpf
+        });
 
         const fuser = users.find((user:any)=>{
             return user.cpf === cpf
@@ -44,14 +53,12 @@ export default class UsersController{
         } 
             
 
-        const user =  {
+        const user:iuser =  {
             id:uuid(),
             name,
             email,
-            birthDate,
-            cpf,
-            address: {},
-            todos: []
+            birthDate: birthDate,
+            cpf
         }
         users.push(user);
         response.status(201).json(users)
@@ -71,18 +78,45 @@ export default class UsersController{
 
     }
     public async af(request:Request ,response:Response){
-        var tage = Date;
+        const mage: any[] = []
+
         var data = new Date();
         var dia = String(data.getDate()).padStart(2, '0');
         var mes = String(data.getMonth() + 1).padStart(2, '0');
         var ano = data.getFullYear();
         var dataAtual = dia + '/' + mes + '/' + ano;
-        console.log(dataAtual);
-        //const age = users.find((user:any)=>{
-          
-        //   console.log(tage = user.birthDate-getDay / data)
-        //})
 
+        users.forEach(user => {
+            const fullDate = String(user.birthDate);
+            var fsplit =fullDate.split('/');
+
+            var uday = fsplit.slice(0,1)
+            var ncdu = Number(uday)
+            var ncdc = Number(dia)
+            //var rd= ncdc - ncdu
+
+            var umonth = fsplit.slice(1,2)
+            var ncmu = Number(umonth)
+            var ncmc = Number(mes)
+            //var rm= ncmc - ncmu
+            
+            var uyear = fsplit.slice(2,3)
+            var ncyu = Number(uyear)
+            var ncyc = Number(ano)
+            var ry = ncyc - ncyu
+
+            if (ncmc < ncmu || ncmc == ncmu && ncdc < ncdu ) {
+                ry--;
+            }
+            
+            user.age = ry
+
+            if(user.age >= 18){
+                mage.push(user)
+                return response.status(200).json(mage);
+            }
+        });
+        return response.status(200).json();
     }
 
 }
@@ -90,3 +124,7 @@ export default class UsersController{
 function newDate() {
     throw new Error("Function not implemented.");
 }
+function splitString(udate: Date) {
+    throw new Error("Function not implemented.");
+}
+
