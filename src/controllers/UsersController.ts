@@ -58,7 +58,7 @@ export default class UsersController{
         users.push(user);
         response.status(201).json(users)
     }
-    //Procurar Informações de Usuário \/
+    //Procurar Cpf especifico de Usuário \/
     public async search(request:Request ,response: Response){
 
         const {cpf} = request.headers;
@@ -112,7 +112,7 @@ export default class UsersController{
 
         return response.status(200).json(mage);
     }
-
+//Ordenar usuários em ordem Afabética \/
     public async order(request:Request, response:Response){
         const {organize} = request.headers;
         let userAux: iuser[] = []
