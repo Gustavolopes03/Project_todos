@@ -7,6 +7,7 @@ const userController = new UsersController();
 
 routes.post("/users", userController.create);
 routes.get("/users", userController.search);
-routes.get("/users", userController.af);
+routes.get("/agefind", userController.agefind);
+routes.get ("/order",userController.order)
 
 export { routes };

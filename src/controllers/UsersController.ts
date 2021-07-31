@@ -1,8 +1,4 @@
-import { strict } from "assert/strict";
-import { Request,Response } from "express";
-import { read } from "fs";
-import { addListener } from "process";
-import { Any } from "typeorm";
+import { request, Request,Response } from "express";
 import { stringify, v4 as uuid } from "uuid";
 
 interface iuser {
@@ -26,7 +22,6 @@ interface iuser {
        done:boolean,
        created_at:Date,
     }
-    
 
 }
 const users: iuser[] = [];
@@ -37,12 +32,12 @@ export default class UsersController{
         
         const { name,email,birthDate,cpf } = request.body;
 
-        const userFindall = users.find((user:any)=> {
-            return user.name === name,
-            user.email === email,
-            user.birthDate === birthDate,
-            user.cpf === cpf
-        });
+        // const userFindall = users.find((user:any)=> {
+        //     return user.name === name,
+        //     user.email === email,
+        //     user.birthDate === birthDate,
+        //     user.cpf === cpf
+        // });
 
         const fuser = users.find((user:any)=>{
             return user.cpf === cpf
@@ -78,7 +73,7 @@ export default class UsersController{
 
     }
     //Procurar Usuários Maiores de 18 \/
-    public async af(request:Request ,response:Response){
+    public async agefind(request:Request ,response:Response){
         const mage: any[] = []
 
         var data = new Date();
@@ -118,12 +113,39 @@ export default class UsersController{
         return response.status(200).json(mage);
     }
 
-}
+    public async order(request:Request, response:Response){
+        const {organize} = request.headers;
+        let userAux: iuser[] = []
 
-function newDate() {
-    throw new Error("Function not implemented.");
-}
-function splitString(udate: Date) {
-    throw new Error("Function not implemented.");
-}
+        if (organize === "desc"){
+            userAux = users.sort((a, b) => {
+                if (a.name.toUpperCase < b.name.toUpperCase) {
+                  return 1;
+                }
+                if (a.name > b.name) {
+                  return -1;
+                }
+                  return 0;
+              });
+        }else{
+            userAux = bubbleSort(users)
+        }
 
+        return response.status(200).json(userAux)
+
+    }
+
+}
+function bubbleSort(a:iuser[]){
+            for(var i = 0; i < a.length; i++) {
+                for(var j=0; j < a.length; j++) {
+                    if(a[i].name.toUpperCase < a[j].name.toUpperCase) {
+                        var temp = a[i].name;
+                        a[i].name = a[j].name;
+                        a[j].name = temp;       
+                    }
+                }
+            }
+
+            return a;
+        }
