@@ -9,7 +9,6 @@ interface iuser {
     id: string,
     name: string,
     birthDate: Date,
-    age?: number,
     email: string,
     //password: string,
     cpf: number,
@@ -33,6 +32,7 @@ interface iuser {
 const users: iuser[] = [];
 
 export default class UsersController{
+    //Criar Usuário \/ 
     public async create(request: Request, response: Response){
         
         const { name,email,birthDate,cpf } = request.body;
@@ -63,7 +63,7 @@ export default class UsersController{
         users.push(user);
         response.status(201).json(users)
     }
-
+    //Procurar Informações de Usuário \/
     public async search(request:Request ,response: Response){
 
         const {cpf} = request.headers;
@@ -77,6 +77,7 @@ export default class UsersController{
         return response.status(200).json(users);
 
     }
+    //Procurar Usuários Maiores de 18 \/
     public async af(request:Request ,response:Response){
         const mage: any[] = []
 
@@ -108,15 +109,13 @@ export default class UsersController{
             if (ncmc < ncmu || ncmc == ncmu && ncdc < ncdu ) {
                 ry--;
             }
-            
-            user.age = ry
 
-            if(user.age >= 18){
-                mage.push(user)
-                return response.status(200).json(mage);
+            if(ry >= 18){
+                mage.push(user)  
             }
         });
-        return response.status(200).json();
+
+        return response.status(200).json(mage);
     }
 
 }
