@@ -10,5 +10,6 @@ routes.get("/userFind", userController.search);
 routes.get("/agefind", userController.agefind);
 routes.get ("/order",userController.order);
 routes.post("/regAddr",userController.regAddr)
+routes.post("/RegTodos",userController.RegTodos);
 
 export { routes };

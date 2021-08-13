@@ -1,5 +1,7 @@
 import { Address } from "cluster";
 import { request, Request, response, Response } from "express";
+import { start } from "repl";
+import { Any } from "typeorm";
 import { stringify, v4 as uuid } from "uuid";
 
 interface iuser {
@@ -16,19 +18,19 @@ interface iuser {
         city: string,
         state: string,
     }
-    todos?: {
+    todos: [{
         id: string,
         title: string,
         deadline: string,
         done: boolean,
-        created_at: Date,
-    }
+        created_at: any,
+    }]
 
 }
 const users: iuser[] = [];
 
 export default class UsersController {
-//Criar Usuário \/ 
+    //Criar Usuário \/ 
     public async create(request: Request, response: Response) {
 
         const { name, email, birthDate, cpf } = request.body;
@@ -54,12 +56,19 @@ export default class UsersController {
             name,
             email,
             birthDate: birthDate,
-            cpf
+            cpf,
+            todos: [{
+                id: "",
+                title: "",
+                deadline: "",
+                done: false,
+                created_at: "",
+            }]
         }
         users.push(user);
         response.status(201).json(users)
     }
-//Procurar Cpf especifico de Usuário \/
+    //Procurar Cpf especifico de Usuário \/
     public async search(request: Request, response: Response) {
 
         const { cpf } = request.headers;
@@ -73,7 +82,7 @@ export default class UsersController {
         return response.status(200).json(users);
 
     }
-//Procurar Usuários Maiores de 18 \/
+    //Procurar Usuários Maiores de 18 \/
     public async agefind(request: Request, response: Response) {
         const mage: any[] = []
         const Userage: any[] = []
@@ -111,7 +120,7 @@ export default class UsersController {
 
         return response.status(200).json(mage);
     }
-//Ordenar usuários em ordem Afabética \/
+    //Ordenar usuários em ordem Afabética \/
     public async order(request: Request, response: Response) {
         const { organize } = request.headers;
         let userAux: iuser[] = []
@@ -133,7 +142,7 @@ export default class UsersController {
         return response.status(200).json(userAux)
 
     }
-//Valida se o cpf está no banco de dados e registra um Endereço ao usuário \/
+    //Valida se o cpf está no banco de dados e registra um Endereço ao usuário \/
     public async regAddr(request: Request, response: Response) {
 
         const { cpf } = request.headers;
@@ -145,7 +154,7 @@ export default class UsersController {
                 return user.cpf === Number(cpf)
             });
             if (!fuser) {
-                return response.status(404).json({ message:"Usuario não existe"});
+                return response.status(404).json({ message: "Usuario não existe" });
             }
 
             const { street, number, district, city, state } = request.body;
@@ -158,9 +167,43 @@ export default class UsersController {
                 state
             }
 
+
             return response.status(200).json(fuser)
         }
-        return response.status(404).json({ message:"Cpf não preechido"});
+        return response.status(404).json({ message: "Cpf não preechido" });
+
+    }
+
+    public async RegTodos(request: Request, response: Response) {
+
+        const { cpf } = request.headers;
+        let usertodos: any;
+
+        console.log(cpf);
+        if (cpf) {
+            const fuser = users.find((user: any) => {
+                console.log(user)
+                return user.cpf === Number(cpf)
+            });
+            if (!fuser) {
+                return response.status(404).json({ message: "Usuario não existe" });
+            }
+
+            const { title, deadline, done } = request.body;
+
+            const todos = {
+                id: uuid(),
+                title,
+                deadline,
+                done,
+                created_at: randomDate()
+            }
+            fuser.todos.push(todos);
+
+
+            return response.status(200).json(fuser)
+        }
+        return response.status(404).json({ message: "Cpf não preechido" });
 
     }
 }
@@ -177,5 +220,9 @@ function bubbleSort(a: iuser[]) {
     }
 
     return a;
+}
+function randomDate() {
+    var data = new Date
+    return new Date(data.getTime() * Math.random());
 }
 
