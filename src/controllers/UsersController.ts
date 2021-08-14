@@ -1,9 +1,15 @@
-import { Address } from "cluster";
 import { request, Request, response, Response } from "express";
-import { start } from "repl";
-import { Any } from "typeorm";
+import { InsertValuesMissingError } from "typeorm";
 import { stringify, v4 as uuid } from "uuid";
+import { UsersRepository } from "../typeorm/repositories/UsersRepository";
 
+interface itodos{
+    id: string,
+    title: string,
+    deadline: string,
+    done: boolean,
+    created_at: any,
+}
 interface iuser {
     id: string,
     name: string,
@@ -18,13 +24,7 @@ interface iuser {
         city: string,
         state: string,
     }
-    todos: [{
-        id: string,
-        title: string,
-        deadline: string,
-        done: boolean,
-        created_at: any,
-    }]
+    todos: itodos[]
 
 }
 const users: iuser[] = [];
@@ -35,51 +35,18 @@ export default class UsersController {
 
         const { name, email, birthDate, cpf } = request.body;
 
-        const userFindall = users.find((user: any) => {
-            return user.name === name,
-                user.email === email,
-                user.birthDate === birthDate,
-                user.cpf === cpf
-        });
+        const createUserRepository = new UsersRepository();
 
-        const fuser = users.find((user: any) => {
-            return user.cpf === cpf
-        });
+        const user = createUserRepository.create({name, email, birthDate, cpf});
 
-        if (fuser) {
-            return response.status(200).json(fuser)
-        }
-
-
-        const user: iuser = {
-            id: uuid(),
-            name,
-            email,
-            birthDate: birthDate,
-            cpf,
-            todos: [{
-                id: "",
-                title: "",
-                deadline: "",
-                done: false,
-                created_at: "",
-            }]
-        }
-        users.push(user);
-        response.status(201).json(users)
+        response.status(201).json(user)
     }
     //Procurar Cpf especifico de Usuário \/
     public async search(request: Request, response: Response) {
 
-        const { cpf } = request.headers;
+        const { user } = request.user;
 
-        if (cpf) {
-            const fuser = users.find((user: any) => {
-                return user.cpf == cpf
-            });
-            return response.status(200).json(fuser)
-        }
-        return response.status(200).json(users);
+        return response.status(200).json(user);
 
     }
     //Procurar Usuários Maiores de 18 \/
@@ -183,7 +150,7 @@ export default class UsersController {
         if (cpf) {
             const fuser = users.find((user: any) => {
                 console.log(user)
-                return user.cpf === Number(cpf)
+                return user.cpf === (cpf)
             });
             if (!fuser) {
                 return response.status(404).json({ message: "Usuario não existe" });
@@ -196,10 +163,10 @@ export default class UsersController {
                 title,
                 deadline,
                 done,
-                created_at: randomDate()
+                created_at: new Date()
             }
             fuser.todos.push(todos);
-
+            console.log(request.body)
 
             return response.status(200).json(fuser)
         }
@@ -221,8 +188,6 @@ function bubbleSort(a: iuser[]) {
 
     return a;
 }
-function randomDate() {
-    var data = new Date
-    return new Date(data.getTime() * Math.random());
-}
+
+
 
