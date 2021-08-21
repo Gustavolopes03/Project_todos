@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { UsersRepository } from "typeorm/repositories/UsersRepository";
 import UsersController from "./controllers/UsersController";
 import checksExistsUser from "./middlewares/checksExistsUser";
 

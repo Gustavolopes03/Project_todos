@@ -1,6 +1,5 @@
-import { request, Request, response, Response } from "express";
-import { InsertValuesMissingError } from "typeorm";
-import { stringify, v4 as uuid } from "uuid";
+import { NextFunction, Request, Response } from "express";
+import { v4 as uuid } from "uuid";
 import { UsersRepository } from "../typeorm/repositories/UsersRepository";
 
 interface itodos{
@@ -28,6 +27,7 @@ interface iuser {
 
 }
 const users: iuser[] = [];
+const usersRepository = new UsersRepository();
 
 export default class UsersController {
     //Criar Usuário \/ 
@@ -43,8 +43,11 @@ export default class UsersController {
     }
     //Procurar Cpf especifico de Usuário \/
     public async search(request: Request, response: Response) {
-
         const { user } = request.user;
+
+        if (!user) {
+            return response.status(200).send("User not found!")
+        }
 
         return response.status(200).json(user);
 
@@ -52,38 +55,9 @@ export default class UsersController {
     //Procurar Usuários Maiores de 18 \/
     public async agefind(request: Request, response: Response) {
         const mage: any[] = []
-        const Userage: any[] = []
 
-        var data = new Date();
-        var diaAtual = String(data.getDate()).padStart(2, '0');
-        var mesAtual = String(data.getMonth() + 1).padStart(2, '0');
-        var anoAtual = data.getFullYear();
-        var dataAtual = diaAtual + '/' + mesAtual + '/' + anoAtual;
-
-        users.forEach(user => {
-            const fullDate = String(user.birthDate);
-            var fsplit = fullDate.split('/');
-
-            var userday = fsplit.slice(0, 1)
-            var nUday = Number(userday)
-            var nAday = Number(diaAtual)
-
-            var usermonth = fsplit.slice(1, 2)
-            var nUmonth = Number(usermonth)
-            var nAmonth = Number(mesAtual)
-
-            var uyear = fsplit.slice(2, 3)
-            var nUyear = Number(uyear)
-            var nAyear = Number(anoAtual)
-            var ry = nAyear - nUyear
-
-            if (nAmonth < nUmonth || nAmonth == nUmonth && nAday < nUday) {
-                ry--;
-            }
-            if (ry >= 18) {
-                mage.push(user)
-            }
-        });
+        usersRepository.agefind(mage);
+        console.log(mage)
 
         return response.status(200).json(mage);
     }

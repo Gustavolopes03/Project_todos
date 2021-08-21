@@ -1,8 +1,7 @@
 import { uuid } from "uuidv4";
 
 
-class User {
-    
+class User { 
     id?: string;
     name?: string;
     birthDate?: Date;
@@ -27,8 +26,3 @@ class User {
 
 
 export { User }
-
-class name {
-    constructor() {
-    }
-}
