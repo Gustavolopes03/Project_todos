@@ -1,6 +1,7 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { v4 as uuid } from "uuid";
 import { UsersRepository } from "../typeorm/repositories/UsersRepository";
+import { CreateUserService } from "../service/CreateUsersService"
 
 interface itodos{
     id: string,
@@ -28,6 +29,7 @@ interface iuser {
 }
 const users: iuser[] = [];
 const usersRepository = new UsersRepository();
+const createUserService = new CreateUserService();
 
 export default class UsersController {
     //Criar Usuário \/ 
@@ -35,9 +37,7 @@ export default class UsersController {
 
         const { name, email, birthDate, cpf } = request.body;
 
-        const createUserRepository = new UsersRepository();
-
-        const user = createUserRepository.create({name, email, birthDate, cpf});
+        const user = createUserService.execute({name, email, birthDate, cpf});
 
         response.status(201).json(user)
     }

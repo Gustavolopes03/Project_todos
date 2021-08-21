@@ -30,7 +30,13 @@ class UsersRepository {
     
     constructor() {
         this.users = [];
+        const data = fs.readFileSync('db.json',
+            { encoding: 'utf8', flag: 'r' });
+
+
+        this.users = JSON.parse(data);
     }
+    
     create({ name, email, birthDate, cpf }: iuserDTO): User {
 
         const user = new User()
@@ -63,7 +69,7 @@ class UsersRepository {
             { encoding: 'utf8', flag: 'r' });
 
 
-        users = JSON.parse(data);
+        this.users = JSON.parse(data);
 
         return users.find((user: any) => {
             return user.cpf == cpf
