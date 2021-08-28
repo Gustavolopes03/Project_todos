@@ -3,7 +3,7 @@ import { uuid } from "uuidv4";
 
 class User { 
     id?: string;
-    name?: string;
+    name: string;
     birthDate?: Date;
     email?: string;
     cpf?: string;
