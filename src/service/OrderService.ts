@@ -4,7 +4,7 @@ import { UsersRepository } from "../typeorm/repositories/UsersRepository";
 
 class OrderService {
    
-    public execute(organize:string): any {
+    public execute(organize:string): any | undefined {
         const usersRepository = new UsersRepository();
 
         const users = usersRepository.findAll();
@@ -13,7 +13,7 @@ class OrderService {
 
         if (organize === "desc") {
             userAux = users.sort((a, b) => {
-                if (a.name.toUpperCase() < b.name.toUpperCase()) {
+                if (a.name < b.name) {
                     return 1;
                 }
                 if (a.name > b.name) {
@@ -34,7 +34,7 @@ class OrderService {
 function bubbleSort(a: User[]) {
     for (var i = 0; i < a.length; i++) {
         for (var j = 0; j < a.length; j++) {
-            if (a[i].name.toUpperCase() < a[j].name.toUpperCase()) {
+            if (a[i].name < a[j].name) {
                 var temp = a[i].name;
                 a[i].name = a[j].name;
                 a[j].name = temp;

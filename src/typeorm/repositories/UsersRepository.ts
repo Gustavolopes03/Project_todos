@@ -1,15 +1,17 @@
 import { User } from "../entities/Users";
 import fs from 'fs';
-import { Address } from "cluster";
+import { uuid } from "uuidv4";
 
-interface itodosDTO {
+
+interface todos {
     id: string,
     title: string,
     deadline: string,
     done: boolean,
     created_at: any,
 }
-interface iuserDTO {
+
+interface CreatUser {
     name: string,
     birthDate: Date,
     email: string,
@@ -22,16 +24,25 @@ interface iuserDTO {
         city: string,
         state: string,
     }
-    todos?: itodosDTO[]
+    todos?: todos[]
 }
 
-interface tese {
+interface UserAddr {
     user: User,
-        street: string,
-        number: number,
-        district: string,
-        city: string,
-        state: string,
+    street: string,
+    number: number,
+    district: string,
+    city: string,
+    state: string,
+}
+
+interface UserTodos {
+    user:User
+    idtodos?: string,
+    title: string,
+    deadline: string,
+    done: boolean,
+    created_at?: any,
 }
 
 class UsersRepository {
@@ -46,7 +57,10 @@ class UsersRepository {
         this.users = JSON.parse(data);
     }
     
-    create({ name, email, birthDate, cpf }: iuserDTO): User {
+    findAll(): User[] {
+        return this.users;
+    }
+    create({ name, email, birthDate, cpf }: CreatUser): User {
 
         const user = new User()
 
@@ -78,35 +92,80 @@ class UsersRepository {
         });
 
     }
-    findAll(): User[] {
-        return this.users;
-    }
+    
 
+    AddressUpdate({ user,street, number, district, city, state }:UserAddr):any{
 
-    RegAddr({ street, number, district, city, state }: iuserDTO):User {
-
-        Object.assign(tese = {
-            user
-            street,
-            number,
-            district,
-            city,
-            state
-        })
-
-        this.user.push(address)
-
-        fs.writeFile("db.json", JSON.stringify(this.user), function (err) {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("The file was saved!");
-            }
+        const index = this.users.findIndex(function(a){
+            return a.id === user.id
         });
+        
+        if(index >=0){ 
 
-        return user;
+            this.users.splice(index,1)
+
+        }
+        
+        user.address = {
+
+            street,
+            number, 
+            district,
+            city, 
+            state
+
+        }
+
+         this.users.push(user)
+
+         fs.writeFile("db.json", JSON.stringify(this.users), function (err) {
+             if (err) {
+                 console.log(err);
+             } else {
+                 console.log("The file was saved!");
+             }
+         });
+
+         return user;
     }
 
+    TodosUpdate({ user, title, deadline, done }:UserTodos):any{
+
+        const index = this.users.findIndex(function(a){
+            return a.id === user.id
+        });
+           
+        if(index >=0){ 
+
+            this.users.splice(index,1)
+
+        }
+        
+        user.todos = {
+            
+            idtodos: uuid(),
+            title, 
+            deadline,
+            done, 
+            created_at : new Date
+
+        }
+
+         this.users.push(user)
+
+         fs.writeFile("db.json", JSON.stringify(this.users), function (err) {
+
+             if (err) {
+                 console.log(err);
+             } else {
+                 console.log("The file was saved!");
+             }
+
+         });
+
+         return user;
+
+    }
     
 }
 export { UsersRepository }

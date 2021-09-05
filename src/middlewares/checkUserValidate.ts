@@ -2,7 +2,6 @@ import { Request, NextFunction, Response } from "express";
 import { ObjectShape, OptionalObjectSchema } from "yup/lib/object";
 
 
-
 const checkUserValidate = ( requestSchema:OptionalObjectSchema <ObjectShape> ) => 
     async (request:Request,response:Response,next:NextFunction) => {
         const { name, email, birthDate, cpf } = request.body;

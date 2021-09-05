@@ -1,8 +1,7 @@
-
 import { UsersRepository } from "../typeorm/repositories/UsersRepository"
 
 
-interface Request {
+interface CreateUser {
     name: string,
     birthDate: Date,
     email: string,
@@ -15,19 +14,22 @@ interface Request {
         city: string,
         state: string,
     }
-    todos?: Request[]
+    todos?: CreateUser[]
 
 }
 
-        const usersRepository = new UsersRepository();
+    const usersRepository = new UsersRepository();
+
 class CreateUserService {
-    public execute({ name, email, birthDate, cpf }:Request) {      
+
+    public execute({ name, email, birthDate, cpf }:CreateUser) {      
 
         const user = usersRepository.create({name, email, birthDate, cpf});
 
         return user
 
     }
+
 }
 
 

@@ -1,8 +1,8 @@
 import { NextFunction,Request,Response } from "express";
 import { UsersRepository } from "../typeorm/repositories/UsersRepository";
 
-const usersRepository = new UsersRepository();
 
+const usersRepository = new UsersRepository();
 
 export default function checksExistsUser(
     request:Request, response:Response, next:NextFunction
@@ -10,7 +10,6 @@ export default function checksExistsUser(
     const { cpf } = request.headers;
 
     try {
-
 
         if(!cpf){
             throw new Error("Unfilled Cpf");
